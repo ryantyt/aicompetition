@@ -6,6 +6,8 @@ import os
 from matplotlib import pyplot as plt
 import time
 
+from kp_ext_func import drawStyledLandmarks, extractKeypoints, mediapipeDetection
+
 
 # Only if we can't find training data online
 DATA_PATH = os.path.join('trainingData')
@@ -17,9 +19,8 @@ actions = np.array([])
 mpDrawing = mp.solutions.drawing_utils
 mpHands = mp.solutions.hands
 
-
-# No. sequences and sequence length
-noSeq = 30
+# No. sequences and no. frames per video
+noSeq = 16
 seqLen = 30
 
 labelMap = {label:num for num, label in enumerate(actions)}
