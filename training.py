@@ -15,3 +15,11 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.callbacks import TensorBoard
 
+
+import datacollection
+
+# find a way to share the variables first before continuing 
+
+labelMap = {label:num for num, label in enumerate(datacollection.actions)}
+
+print(labelMap)
