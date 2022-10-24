@@ -7,6 +7,7 @@ import time
 from kp_ext_func import drawStyledLandmarks, extractKeypoints, mediapipeDetection
 
 # Only if we can't find training data online
+
 DATA_PATH = os.path.join('trainingData')
 
 # Decide on what actions here
@@ -21,45 +22,50 @@ noSeq = 16
 seqLen = 30
 
 # Makes folders if they weren't there already
-for action in actions:
-    for sequence in range(noSeq):
-        try:
-            os.makedirs(os.path.join(DATA_PATH, action, str(sequence)))
-        except:
-            pass
 
-
-cap = cv2.VideoCapture(0)
-with mpHolistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+def main():
     for action in actions:
         for sequence in range(noSeq):
-            for frameNum in range(seqLen):
+            try:
+                os.makedirs(os.path.join(DATA_PATH, action, str(sequence)))
+            except:
+                pass
 
-                width, height = cap.get(3), cap.get(4)
 
-                ret, frame = cap.read()
-                frame = cv2.flip(frame, 1)
+    cap = cv2.VideoCapture(0)
+    with mpHolistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+        for action in actions:
+            for sequence in range(noSeq):
+                for frameNum in range(seqLen):
 
-                # results is a list of landmark coordinates
-                image, results = mediapipeDetection(frame, holistic)
+                    width, height = cap.get(3), cap.get(4)
 
-                drawStyledLandmarks(image, results)
+                    ret, frame = cap.read()
+                    frame = cv2.flip(frame, 1)
 
-                if frameNum == 0:
-                    cv2.putText(image, 'STARTING COLLECTION', (width/2, height/2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
-                    cv2.putText(image, 'Action: {}, Video Number: {}'.format(action, sequence), (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
-                    cv2.waitKey(2000)
-                else:
-                    cv2.putText(image, 'Action: {}, Video Number: {}'.format(action, sequence), (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                    # results is a list of landmark coordinates
+                    image, results = mediapipeDetection(frame, holistic)
 
-                keypoints = extractKeypoints(results)
-                npyPath = os.path.join(DATA_PATH, action, str(sequence), str(frameNum))
-                np.save(npyPath, keypoints)
+                    drawStyledLandmarks(image, results)
 
-                cv2.imshow('Hand Tracking', image)
+                    if frameNum == 0:
+                        cv2.putText(image, 'STARTING COLLECTION', (width/2, height/2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                        cv2.putText(image, f'Action: {action}, Video Number: {sequence}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                        cv2.waitKey(2000)
+                    else:
+                        cv2.putText(image, f'Action: {action}, Video Number: {sequence}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
 
-                if cv2.waitKey(10) & 0xFF == ord('q'):
-                    break
+                    keypoints = extractKeypoints(results)
+                    npyPath = os.path.join(DATA_PATH, action, str(sequence), str(frameNum))
+                    np.save(npyPath, keypoints)
 
-cap.release()
-cv2.destroyAllWindows()
+                    cv2.imshow('Hand Tracking', image)
+
+                    if cv2.waitKey(10) & 0xFF == ord('q'):
+                        break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "main":
+    main()
