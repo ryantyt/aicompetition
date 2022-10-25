@@ -1,12 +1,8 @@
-from tkinter import N
 import mediapipe as mp
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 import os
-import time
-import sklearn
-import tensorflow as tf
 
 # Sharing variables
 import datacollection

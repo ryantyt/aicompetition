@@ -2,7 +2,6 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import os
-import time
 
 from kp_ext_func import drawStyledLandmarks, extractKeypoints, mediapipeDetection
 
@@ -11,7 +10,7 @@ from kp_ext_func import drawStyledLandmarks, extractKeypoints, mediapipeDetectio
 DATA_PATH = os.path.join('trainingData')
 
 # Decide on what actions here
-actions = np.array(['a', 'b', 'c'])
+actions = np.array([])
 
 # Initialilse mediapipe holistics
 mpHolistic = mp.solutions.holistic
@@ -33,14 +32,16 @@ def main():
 
 
     cap = cv2.VideoCapture(0)
+    width, height = cap.get(3), cap.get(4)
+    x, y = int(width)/2, int(height)/2
+    print(type(width))
+
     with mpHolistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         for action in actions:
             for sequence in range(noSeq):
                 for frameNum in range(seqLen):
 
-                    width, height = cap.get(3), cap.get(4)
-
-                    ret, frame = cap.read()
+                    _, frame = cap.read()
                     frame = cv2.flip(frame, 1)
 
                     # results is a list of landmark coordinates
@@ -49,11 +50,11 @@ def main():
                     drawStyledLandmarks(image, results)
 
                     if frameNum == 0:
-                        cv2.putText(image, 'STARTING COLLECTION', (width/2, height/2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
-                        cv2.putText(image, f'Action: {action}, Video Number: {sequence}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
-                        cv2.waitKey(2000)
+                        cv2.putText(image, 'STARTING COLLECTION', (640, 480), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                        cv2.putText(image, f'Action: {action}, Video Number: {sequence + 1}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                        cv2.waitKey(5000)
                     else:
-                        cv2.putText(image, f'Action: {action}, Video Number: {sequence}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
+                        cv2.putText(image, f'Action: {action}, Video Number: {sequence + 1}', (30, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 4, cv2.LINE_AA)
 
                     keypoints = extractKeypoints(results)
                     npyPath = os.path.join(DATA_PATH, action, str(sequence), str(frameNum))
@@ -67,5 +68,5 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()

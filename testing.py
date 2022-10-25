@@ -1,11 +1,7 @@
-from tkinter import N
 import mediapipe as mp
 import cv2
-from matplotlib import pyplot as plt
 import numpy as np
 import os
-import time
-import sklearn
 import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
@@ -15,7 +11,17 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.callbacks import TensorBoard
 
-from kp_ext_func import extractKeypoints, mediapipeDetection
+# from tkinter import *
+# win = Tk()
+# lab = Label(win)
+# lab.pack()
+
+# def update(text):
+#     a = text + ' '
+#     lab['text'] = a
+#     win.after(1000, update)
+
+from kp_ext_func import drawLandmarks, extractKeypoints, mediapipeDetection
 
 import datacollection
 actions = datacollection.actions
@@ -25,7 +31,7 @@ mpDrawing = mp.solutions.drawing_utils # Drawing utilities
 
 sequence, sentence = [], []
 
-threshold = 0.4
+threshold = 0.8
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
@@ -38,11 +44,14 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.load_weights('action.h5')
 
-def main():
+
+def main(sequence, sentence):
+    # update('start typing')
+
     cap = cv2.VideoCapture(0)
     with mpHolistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         while cap.isOpened():
-            ret, frame = cap.read()
+            _, frame = cap.read()
             frame = cv2.flip(frame, 1)
             image, results = mediapipeDetection(frame, holistic)
 
@@ -61,12 +70,12 @@ def main():
                         print(np.argmax(res))
                         sentence.append(actions[np.argmax(res)])
                 
-                if len(sentence) > 5:
-                    sentence = sentence[-5:]
-            
+                if len(sentence) > 10:
+                    sentence = sentence[-10:]
+            drawLandmarks(image, results)
             cv2.rectangle(image, (0, 0), (1280, 40), (0,0,0), -1)
             cv2.putText(image, ' '.join(sentence), (3, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            
+
             cv2.imshow('Feed', image)
             if cv2.waitKey(10) & 0xFF == ord('q'):
                 break
@@ -74,5 +83,5 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
-if __name__ == "main":
-    main()
+if __name__ == "__main__":
+    main(sequence, sentence)
