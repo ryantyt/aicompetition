@@ -11,8 +11,6 @@ noSeq = datacollection.noSeq
 seqLen = datacollection.seqLen
 DATA_PATH = datacollection.DATA_PATH
 
-# # find a way to share the variables first before continuing 
-
 labelMap = {label:num for num, label in enumerate(actions)}
 
 sequences, labels = [], []

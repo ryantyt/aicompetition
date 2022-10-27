@@ -4,3 +4,10 @@
 Libraries:
 - OpenCV
 - MediaPipe
+- Tensorflow/Keras
+
+Order of running files:
+- Datacollection.py
+- Preprocessing.py
+- Training.py
+- Testing.py
