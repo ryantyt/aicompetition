@@ -12,12 +12,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.callbacks import TensorBoard
 
-# Sharing variables
-import datacollection
-actions = datacollection.actions
-noSeq = datacollection.noSeq
-seqLen = datacollection.seqLen
-DATA_PATH = datacollection.DATA_PATH
+from constants import actions
 
 import preprocessing
 sequences = preprocessing.sequences

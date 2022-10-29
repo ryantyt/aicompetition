@@ -11,15 +11,7 @@ from keras.models import Sequential
 from keras.layers import LSTM, Dense
 from keras.callbacks import TensorBoard
 
-# from tkinter import *
-# win = Tk()
-# lab = Label(win)
-# lab.pack()
-
-# def update(text):
-#     a = text + ' '
-#     lab['text'] = a
-#     win.after(1000, update)
+from constants import THRESHOLD
 
 from kp_ext_func import drawLandmarks, extractKeypoints, mediapipeDetection
 
@@ -30,8 +22,6 @@ mpHolistic = mp.solutions.holistic # Holistic model
 mpDrawing = mp.solutions.drawing_utils # Drawing utilities
 
 sequence, sentence = [], []
-
-threshold = 0.8
 
 model = Sequential()
 model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(30,1662)))
@@ -62,7 +52,7 @@ def main(sequence, sentence):
             if len(sequence) == 30:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
 
-                if res[np.argmax(res)] > threshold:
+                if res[np.argmax(res)] > THRESHOLD:
                     if len(sentence) > 0:
                         if actions[np.argmax(res)] != sentence[-1]:
                             sentence.append(actions[np.argmax(res)])

@@ -5,11 +5,7 @@ import mediapipe as mp
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
-
-# Constants
-t = 2
-t1 = 3
-r = 2
+from constants import T, T1, R
 
 mp_holistic = mp.solutions.holistic # Holistic model
 mp_drawing = mp.solutions.drawing_utils # Drawing utilities
@@ -35,14 +31,14 @@ def drawStyledLandmarks(image, results):
         mp_drawing.DrawingSpec(color=(80, 110, 10), thickness=1, circle_radius=1), 
         mp_drawing.DrawingSpec(color=(80, 256, 121), thickness=1, circle_radius=1))
     mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_holistic.POSE_CONNECTIONS,
-        mp_drawing.DrawingSpec(color=(80, 22, 10), thickness=t1, circle_radius=r), 
-        mp_drawing.DrawingSpec(color=(  80, 44, 121), thickness=t1, circle_radius=r))
+        mp_drawing.DrawingSpec(color=(80, 22, 10), thickness=T1, circle_radius=R), 
+        mp_drawing.DrawingSpec(color=(  80, 44, 121), thickness=T1, circle_radius=R))
     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-        mp_drawing.DrawingSpec(color=(121, 22, 76), thickness=t, circle_radius=r), 
-        mp_drawing.DrawingSpec(color=(121, 44, 250), thickness=t, circle_radius=r))
+        mp_drawing.DrawingSpec(color=(121, 22, 76), thickness=T, circle_radius=R), 
+        mp_drawing.DrawingSpec(color=(121, 44, 250), thickness=T, circle_radius=R))
     mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS,
-        mp_drawing.DrawingSpec(color=(245, 117, 76), thickness=t, circle_radius=r), 
-        mp_drawing.DrawingSpec(color=(245, 66, 250), thickness=t, circle_radius=r))
+        mp_drawing.DrawingSpec(color=(245, 117, 76), thickness=T, circle_radius=R), 
+        mp_drawing.DrawingSpec(color=(245, 66, 250), thickness=T, circle_radius=R))
 
 def extractKeypoints(results):
     pose = np.array([[res.x, res.y, res.z, res.visibility] for res in results.pose_landmarks.landmark]).flatten() if results.pose_landmarks else np.zeros(33*4)
