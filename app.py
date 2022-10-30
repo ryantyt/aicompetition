@@ -1,4 +1,3 @@
-from msilib import sequence
 from cv2 import KeyPoint
 from matplotlib.pyplot import text
 import mediapipe as mp
@@ -14,7 +13,6 @@ from tensorflow import keras
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
-from keras.callbacks import TensorBoard
 
 # Functions and constnats
 from kp_ext_func import drawStyledLandmarks, extractKeypoints, mediapipeDetection
@@ -35,9 +33,10 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.load_weights('action.h5')
 
+words = ''
 text_col = sg.Column([
     [
-        sg.Text('Sentence Starts Here', key='WORDS', expand_x=True, justification='r', font='Calibri 20', border_width=1)
+        sg.Multiline(words, key='WORDS', expand_x=True, size=(50, 8), autoscroll=True ,justification='r', font='Calibri 20', border_width=1)
         ]
 ])
 layout = [
@@ -55,12 +54,12 @@ window = sg.Window('ASL Detection', layout, return_keyboard_events=True)
 cap = cv2.VideoCapture(0)
 with mpHolistic.Holistic(min_detection_confidence=0.7, min_tracking_confidence=0.5) as holistic:
     while True:
-        event, values = window.read()
+        event, values = window.read(timeout=0)
         if event == sg.WIN_CLOSED or event == 'Escape:889192475': break
         if event != '__TIMEOUT__': print(event)
 
         # Detection Logic
-        _, frame = cv2.read()
+        _, frame = cap.read()
         frame = cv2.flip(frame, 1)
 
         # Self explanatory
@@ -76,11 +75,13 @@ with mpHolistic.Holistic(min_detection_confidence=0.7, min_tracking_confidence=0
             res = model.predict(np.expand_dims(sequence, axis=0))[0]
 
             if res[np.argmax(res)] >= THRESHOLD:
-                window['WORDS'].update(values['WORDS'] + ' ' + actions[np.argmax(res)])
+                words = words + ' ' + actions[np.argmax(res)]
+                window['WORDS'].update(words)
 
         # Updates the image inside the pysimplegui window
         disp = cv2.imencode('.png', img)[1].tobytes()
         window['IMAGE'].update(data=disp)
+        cv2.imshow('Video', img)
 
 window.close()
 cv2.destroyAllWindows()

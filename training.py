@@ -39,6 +39,6 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.compile(optimizer="Adam", loss='categorical_crossentropy', metrics=['categorical_accuracy'])
 
-model.fit(x_train, y_train, epochs=2000, callbacks = [tb_callback])
+model.fit(x_train, y_train, epochs=1500, callbacks = [tb_callback])
 
 model.save('action.h5')

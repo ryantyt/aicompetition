@@ -34,7 +34,6 @@ model.add(Dense(actions.shape[0], activation='softmax'))
 
 model.load_weights('action.h5')
 
-
 def main(sequence, sentence):
     # update('start typing')
 
