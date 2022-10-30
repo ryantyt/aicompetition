@@ -14,6 +14,8 @@ Order of running files:
 - Testing.py
 - App.py
 
+well it's done but functionality is garbage
+
 
 Poster:
 - title is project name in sign language
